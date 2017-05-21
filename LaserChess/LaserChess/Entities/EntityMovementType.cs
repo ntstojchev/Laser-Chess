@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LaserChess.Entities
 {
+	[Flags]
 	public enum EntityMovementType
 	{
+		None = 0,
+		Orthogonally = 1,
+		Diagonally = 2,
+		OmniDirection = Orthogonally | Diagonally,
 	}
 }
