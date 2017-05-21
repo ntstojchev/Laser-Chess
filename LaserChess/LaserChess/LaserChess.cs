@@ -21,6 +21,37 @@ namespace LaserChess
 			Console.WriteLine("or write 'exit' to quit LaserChess!");
 			Console.WriteLine(Environment.NewLine);
 
+			int levelPick = PickLevel();
+			if (levelPick == 0)
+			{
+				Console.WriteLine("Quitting Laser Chess...");
+				return;
+			}
+
+			string[] rawChessBoard;
+			try
+			{
+				rawChessBoard = LoadLevelFromFile(levelPick);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+				Console.ReadLine();
+				return;
+			}
+
+			var chessBoard = new ChessBoard.ChessBoard();
+			chessBoard.LoadLevel(rawChessBoard);
+
+			chessBoard.Draw();
+
+			Console.WriteLine(Environment.NewLine);
+			Console.WriteLine("Quitting Laser Chess...");
+			Console.ReadLine();
+		}
+
+		private static int PickLevel()
+		{
 			int levelPick = 0;
 			while (levelPick == 0)
 			{
@@ -29,7 +60,7 @@ namespace LaserChess
 				string line = Console.ReadLine();
 				if (line == _quitCommand)
 				{
-					return;
+					return 0;
 				}
 
 				int userPick = 0;
@@ -52,25 +83,7 @@ namespace LaserChess
 				}
 			}
 
-			string[] rawChessBoard;
-			try
-			{
-				rawChessBoard = LoadLevelFromFile(levelPick);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				Console.ReadLine();
-				return;
-			}
-
-			var chessBoard = new ChessBoard.ChessBoard();
-			chessBoard.LoadLevel(rawChessBoard);
-
-			chessBoard.Draw();
-
-			Console.WriteLine("End of program...");
-			Console.ReadLine();
+			return levelPick;
 		}
 
 		private static string[] LoadLevelFromFile(int levelPick)

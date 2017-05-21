@@ -9,6 +9,7 @@ namespace LaserChess.Entities.Human
 	public class Tank : Entity
 	{
 		public const string _name = "Tank";
+		public Guid _id = Guid.NewGuid();
 		public const string _icon = "T";
 		public const int _hitPoints = 4;
 		public const int _attackPower = 2;
@@ -23,6 +24,7 @@ namespace LaserChess.Entities.Human
 		public Tank()
 		{
 			Name = _name;
+			ID = _id;
 			Icon = _icon;
 			HitPoints = _hitPoints;
 			AttackPower = _attackPower;

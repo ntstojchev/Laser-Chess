@@ -9,6 +9,7 @@ namespace LaserChess.Entities.Human
 	public class Grunt : Entity
 	{
 		public const string _name = "Grunt";
+		public Guid _id = Guid.NewGuid();
 		public const string _icon = "G";
 		public const int _hitPoints = 2;
 		public const int _attackPower = 1;
@@ -23,6 +24,7 @@ namespace LaserChess.Entities.Human
 		public Grunt()
 		{
 			Name = _name;
+			ID = _id;
 			Icon = _icon;
 			HitPoints = _hitPoints;
 			AttackPower = _attackPower;

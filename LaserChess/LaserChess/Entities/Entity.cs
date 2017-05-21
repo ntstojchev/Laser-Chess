@@ -10,6 +10,8 @@ namespace LaserChess.Entities
 	{
 		public string Name { get; set; }
 
+		public Guid ID { get; set; }
+
 		public string Icon { get; set; }
 
 		public int HitPoints { get; set; }

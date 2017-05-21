@@ -9,6 +9,7 @@ namespace LaserChess.Entities.AI
 	public class CommandUnit : Entity
 	{
 		public const string _name = "CommandUnit";
+		public Guid _id = Guid.NewGuid();
 		public const string _icon = "C";
 		public const int _hitPoints = 5;
 		public const int _attackPower = 0;
@@ -23,6 +24,7 @@ namespace LaserChess.Entities.AI
 		public CommandUnit()
 		{
 			Name = _name;
+			ID = _id;
 			Icon = _icon;
 			HitPoints = _hitPoints;
 			AttackPower = _attackPower;

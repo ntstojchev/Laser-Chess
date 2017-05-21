@@ -9,6 +9,7 @@ namespace LaserChess.Entities.Human
 	public class Jumpship : Entity
 	{
 		public const string _name = "Jumpship";
+		public Guid _id = Guid.NewGuid();
 		public const string _icon = "J";
 		public const int _hitPoints = 2;
 		public const int _attackPower = 2;
@@ -23,6 +24,7 @@ namespace LaserChess.Entities.Human
 		public Jumpship()
 		{
 			Name = _name;
+			ID = _id;
 			Icon = _icon;
 			HitPoints = _hitPoints;
 			AttackPower = _attackPower;

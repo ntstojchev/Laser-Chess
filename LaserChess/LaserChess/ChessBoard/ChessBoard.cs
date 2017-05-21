@@ -54,14 +54,15 @@ namespace LaserChess.ChessBoard
 
 			Console.Clear();
 
-			Console.WriteLine("  +___+___+___+___+___+___+___+___+");
+			Console.WriteLine();
+			Console.WriteLine("   +___+___+___+___+___+___+___+___+");
 
 			for (int row = 0; row < Rows; row++)
 			{
-				Console.WriteLine("  |   |   |   |   |   |   |   |   |");
+				Console.WriteLine("   |   |   |   |   |   |   |   |   |");
 
 				var rowLine = new StringBuilder();
-				rowLine.Append($"{Rows - row} |");
+				rowLine.Append($" {Rows - row} |");
 
 				bool invertEmptySpace = row % 2 != 0;
 				for (int column = 0; column < Columns; column++)
@@ -99,10 +100,10 @@ namespace LaserChess.ChessBoard
 				}
 
 				Console.WriteLine(rowLine.ToString());
-				Console.WriteLine("  |___|___|___|___|___|___|___|___|");
+				Console.WriteLine("   |___|___|___|___|___|___|___|___|");
 			}
 
-			Console.WriteLine("  + A   B   C   D   E   F   G   H +");
+			Console.WriteLine("   + A + B + C + D + E + F + G + H +");
 		}
 
 		/// <summary>

@@ -9,6 +9,7 @@ namespace LaserChess.Entities.AI
 	public class Drone : Entity
 	{
 		public const string _name = "Drone";
+		public Guid _id = Guid.NewGuid();
 		public const string _icon = "D";
 		public const int _hitPoints = 2;
 		public const int _attackPower = 1;
@@ -23,6 +24,7 @@ namespace LaserChess.Entities.AI
 		public Drone()
 		{
 			Name = _name;
+			ID = _id;
 			Icon = _icon;
 			HitPoints = _hitPoints;
 			AttackPower = _attackPower;

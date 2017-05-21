@@ -9,6 +9,7 @@ namespace LaserChess.Entities.AI
 	public class Dreadnought : Entity
 	{
 		public const string _name = "Dreadnought";
+		public Guid _id = Guid.NewGuid();
 		public const string _icon = "N";
 		public const int _hitPoints = 5;
 		public const int _attackPower = 2;
@@ -23,6 +24,7 @@ namespace LaserChess.Entities.AI
 		public Dreadnought()
 		{
 			Name = _name;
+			ID = _id;
 			Icon = _icon;
 			HitPoints = _hitPoints;
 			AttackPower = _attackPower;
