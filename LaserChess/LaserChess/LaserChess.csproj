@@ -44,6 +44,8 @@
   <ItemGroup>
     <Compile Include="ChessBoard\ChessBoard.cs" />
     <Compile Include="ChessBoard\ChessBoardCell.cs" />
+    <Compile Include="ChessBoard\ChessBoardPosition.cs" />
+    <Compile Include="ChessBoard\PlayerPiece.cs" />
     <Compile Include="Entities\AI\CommandUnit.cs" />
     <Compile Include="Entities\AI\Dreadnought.cs" />
     <Compile Include="Entities\AI\Drone.cs" />
@@ -56,6 +58,8 @@
     <Compile Include="Entities\Human\Grunt.cs" />
     <Compile Include="Entities\Human\Jumpship.cs" />
     <Compile Include="Entities\Human\Tank.cs" />
+    <Compile Include="GameLoop.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="LaserChess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

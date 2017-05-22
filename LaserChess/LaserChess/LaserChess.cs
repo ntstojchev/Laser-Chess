@@ -43,7 +43,7 @@ namespace LaserChess
 			var chessBoard = new ChessBoard.ChessBoard();
 			chessBoard.LoadLevel(rawChessBoard);
 
-			chessBoard.Draw();
+			var gameLoop = new GameLoop(chessBoard);
 
 			Console.WriteLine(Environment.NewLine);
 			Console.WriteLine("Quitting Laser Chess...");
