@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LaserChess.ChessBoard;
+using System;
 
 namespace LaserChess.Entities.AI
 {
@@ -37,14 +34,13 @@ namespace LaserChess.Entities.AI
 			AttackType = _attackType;
 		}
 
-		public override void Attack()
+		public override void Attack(ChessBoard.ChessBoard chessBoard, ChessBoardPosition currentPosition, ChessBoardPosition targetPosition)
 		{
-			base.Attack();
 		}
 
-		public override void Move()
+		public override void Move(ChessBoard.ChessBoard chessBoard, ChessBoardPosition oldPosition, ChessBoardPosition newPosition)
 		{
-			base.Move();
+			base.Move(chessBoard, oldPosition, newPosition);
 		}
 	}
 }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LaserChess.ChessBoard;
+using System;
 
 namespace LaserChess.Entities
 {
@@ -32,12 +29,12 @@ namespace LaserChess.Entities
 
 		public EntityAttackType AttackType { get; set; }
 
-		public virtual void Attack()
+		public virtual void Attack(ChessBoard.ChessBoard chessBoard, ChessBoardPosition currentPosition, ChessBoardPosition targetPosition)
 		{
 			throw new NotImplementedException();
 		}
 
-		public virtual void Move()
+		public virtual void Move(ChessBoard.ChessBoard chessBoard, ChessBoardPosition oldPosition, ChessBoardPosition newPosition)
 		{
 			throw new NotImplementedException();
 		}

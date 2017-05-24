@@ -3,8 +3,6 @@ using LaserChess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LaserChess
 {
@@ -39,8 +37,6 @@ namespace LaserChess
 
 		private void EnterGameLoop()
 		{
-
-
 			bool metVictoryCondition = false;
 			while (!metVictoryCondition)
 			{
@@ -54,10 +50,11 @@ namespace LaserChess
 
 						if (_selectedEntity != null)
 						{
+							Console.ForegroundColor = ConsoleColor.Blue;
 							switch (_selectedEntity.Type)
 							{
 								case EntityType.Grunt:
-									Console.WriteLine("Grunt can move 1 space orthogonally.");
+									Console.WriteLine("Grunt can move 1 space orthogonally. Attacks diagonally at any range.");
 									break;
 								case EntityType.Jumpship:
 									Console.WriteLine("Jumpship moves like the knight in chess.");
@@ -66,20 +63,85 @@ namespace LaserChess
 									Console.WriteLine("Tank moves like the Queen in chess, up to 3 spaces.");
 									break;
 							}
+							Console.ResetColor();
 
-							Console.Write("Select new cell (<row><column>) or deselect the current piece: ");
+							Console.Write("Select new cell to move (<row><column>) or 'deselect' the current piece: ");
 
 							string inputLine = Console.ReadLine();
-							ChessBoardPosition newChessBoardPosition = ParseChessBoardCellPosition(inputLine);
-							ChessBoardPosition oldChessBoardPosition = (_humanPlayerPieces.First(p => p.EntityID == _selectedEntity.ID)).CurrentPosition;
+							if (inputLine == "deselect")
+							{
+								_selectedEntity = null;
+								break;
+							}
+							else if (inputLine.Length == 2)
+							{
+								ChessBoardPosition newChessBoardPosition = _chessBoard.ParseChessBoardCellPosition(inputLine);
+								ChessBoardPosition oldChessBoardPosition = (_humanPlayerPieces.First(p => p.EntityID == _selectedEntity.ID)).CurrentPosition;
+							
+								try
+								{
+									_selectedEntity.Move(_chessBoard, oldChessBoardPosition, newChessBoardPosition);
+									_humanPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Human);
 
-							//_selectedEntity.Move(_chessBoard, oldChessBoardPosition, newChessBoardPosition);
+									UpdateScreen();
 
-							///TO DO implement Grunt Move and attack
+									string inputAttack = string.Empty;
+									while (inputAttack == string.Empty)
+									{
+										Console.Write("Select cell (<row><column>) to attack or 'skip' attack: ");
+										inputAttack = Console.ReadLine();
 
-							_playedEntityIDs.Add(_selectedEntity.ID);
-							_selectedEntity = null;
-							break;
+										if (inputAttack.Length == 2)
+										{
+											ChessBoardPosition targetPosition = _chessBoard.ParseChessBoardCellPosition(inputAttack);
+
+											if (targetPosition == null)
+											{
+												Console.WriteLine("Invalid cell.");
+												inputAttack = string.Empty;
+											}
+											else
+											{
+												try
+												{
+													ChessBoardPosition currentPosition = (_humanPlayerPieces.First(p => p.EntityID == _selectedEntity.ID)).CurrentPosition;
+													_selectedEntity.Attack(_chessBoard, currentPosition, targetPosition);
+												}
+												catch (Exception ex)
+												{
+													Console.WriteLine(ex.Message);
+													inputAttack = string.Empty;
+												}
+											}
+										}
+										else if (inputAttack == "skip")
+										{
+											inputAttack = "skip";
+										}
+										else
+										{
+											inputAttack = string.Empty;
+										}
+									}
+
+									_playedEntityIDs.Add(_selectedEntity.ID);
+									_selectedEntity = null;
+									break;
+								}
+								catch (Exception ex)
+								{
+									Console.ForegroundColor = ConsoleColor.Red;
+									Console.WriteLine(ex.Message);
+									Console.ReadLine();
+									Console.ResetColor();
+									break;
+								}
+							}
+							else
+							{
+								break;
+							}
+							///TO DO implement Grunt attack
 						}
 
 						#endregion
@@ -136,7 +198,7 @@ namespace LaserChess
 
 		private void SelectEntityDuringHumanTurn(string line)
 		{
-			ChessBoardPosition chessBoardPosition = ParseChessBoardCellPosition(line);
+			ChessBoardPosition chessBoardPosition = _chessBoard.ParseChessBoardCellPosition(line);
 			if (chessBoardPosition == null)
 			{
 				Console.WriteLine("Invalid cell.");
@@ -148,80 +210,18 @@ namespace LaserChess
 			{
 				Console.WriteLine($"Specified cell {line} is empty.");
 			}
-			else if (_playedEntityIDs.Contains(cell.Entity.ID))
+			else if (cell.IsOccupied)
 			{
-				Console.WriteLine($"You've already played with the piece on {line}.");
-			}
-			else
-			{
-				_selectedEntity = cell.Entity;
-			}
-		}
-
-		public ChessBoardPosition ParseChessBoardCellPosition(string line)
-		{
-			int column = -1;
-			switch (line[0])
-			{
-				case 'A':
-					column = 0;
-					break;
-				case 'B':
-					column = 1;
-					break;
-				case 'C':
-					column = 2;
-					break;
-				case 'D':
-					column = 3;
-					break;
-				case 'E':
-					column = 4;
-					break;
-				case 'F':
-					column = 5;
-					break;
-				case 'G':
-					column = 6;
-					break;
-				case 'H':
-					column = 7;
-					break;
-				default:
-					column = -1;
-					Console.WriteLine("Invalid chess board column.");
-					break;
-			}
-
-			if (column < 0)
-			{
-				return null;
-			}
-
-			int inputRow;
-			bool validRow = Int32.TryParse(line[1].ToString(), out inputRow);
-
-			int row = -1;
-			if (validRow)
-			{
-				if (inputRow > 0 && inputRow < 9)
+				if (_playedEntityIDs.Contains(cell.Entity.ID))
 				{
-					row = _chessBoard.Rows - inputRow;
+					Console.WriteLine($"You've already played with the piece on {line}.");
+				}
+				else
+				{
+					_selectedEntity = cell.Entity;
+
 				}
 			}
-
-			if (row < 0)
-			{
-				return null;
-			}
-
-			var chessBoardPosition = new ChessBoardPosition
-			{
-				CurrentRow = row,
-				CurrentColumn = column,
-			};
-
-			return chessBoardPosition;
 		}
 	}
 }

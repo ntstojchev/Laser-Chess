@@ -210,15 +210,91 @@ namespace LaserChess.ChessBoard
 			return playerPieces;
 		}
 
-		public ChessBoardCell GetCell(ChessBoardPosition chessBoardPosition)
+		public ChessBoardPosition ParseChessBoardCellPosition(string line)
 		{
-			ChessBoardCell cell = ChessBoardCells[chessBoardPosition.CurrentRow, chessBoardPosition.CurrentColumn];
-			if ((cell.IsOccupied) && (cell.Entity != null))
+			int column = -1;
+			switch (line[0])
 			{
-				return cell;
+				case 'A':
+					column = 0;
+					break;
+				case 'B':
+					column = 1;
+					break;
+				case 'C':
+					column = 2;
+					break;
+				case 'D':
+					column = 3;
+					break;
+				case 'E':
+					column = 4;
+					break;
+				case 'F':
+					column = 5;
+					break;
+				case 'G':
+					column = 6;
+					break;
+				case 'H':
+					column = 7;
+					break;
+				default:
+					column = -1;
+					Console.WriteLine("Invalid chess board column.");
+					break;
 			}
 
-			return null;
+			if (column < 0)
+			{
+				return null;
+			}
+
+			int inputRow;
+			bool validRow = Int32.TryParse(line[1].ToString(), out inputRow);
+
+			int row = -1;
+			if (validRow)
+			{
+				if (inputRow > 0 && inputRow < 9)
+				{
+					row = Rows - inputRow;
+				}
+			}
+
+			if (row < 0)
+			{
+				return null;
+			}
+
+			var chessBoardPosition = new ChessBoardPosition
+			{
+				CurrentRow = row,
+				CurrentColumn = column,
+			};
+
+			return chessBoardPosition;
+		}
+
+		public ChessBoardCell GetCell(ChessBoardPosition chessBoardPosition)
+		{
+			return ChessBoardCells[chessBoardPosition.CurrentRow, chessBoardPosition.CurrentColumn];
+		}
+
+		public void SetCell(ChessBoardPosition chessBoardPosition, ChessBoardCell cell)
+		{
+			ChessBoardCells[chessBoardPosition.CurrentRow, chessBoardPosition.CurrentColumn] = cell;
+		}
+
+		public void EmptyCell(ChessBoardPosition chessBoardPosition)
+		{
+			var cell = new ChessBoardCell
+			{
+				Entity = null,
+				IsOccupied = false,
+			};
+
+			SetCell(chessBoardPosition, cell);
 		}
 	}
 }
