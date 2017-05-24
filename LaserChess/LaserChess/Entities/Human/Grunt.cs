@@ -50,16 +50,19 @@ namespace LaserChess.Entities.Human
 								&& p.CurrentColumn == targetPosition.CurrentColumn))
 			{
 				ChessBoardCell cell = chessBoard.GetCell(targetPosition);
-				cell.Entity.HitPoints = cell.Entity.HitPoints - AttackPower;
-
-				Console.WriteLine("Hit!");
-				if (cell.Entity.HitPoints < 1)
+				if (cell.IsOccupied && cell.Entity != null)
 				{
-					Console.WriteLine($"Enemy {cell.Entity.Name} is destroyed!");
-					chessBoard.EmptyCell(targetPosition);
-				}
+					cell.Entity.HitPoints = cell.Entity.HitPoints - AttackPower;
 
-				Console.ReadLine();
+					Console.WriteLine($"Hit on enemy {cell.Entity.Name}!");
+					if (cell.Entity.HitPoints < 1)
+					{
+						Console.WriteLine($"Enemy {cell.Entity.Name} is destroyed!");
+						chessBoard.EmptyCell(targetPosition);
+					}
+
+					Console.ReadLine();
+				}
 			}
 			else
 			{
@@ -95,10 +98,10 @@ namespace LaserChess.Entities.Human
 		{
 			var validPositions = new List<ChessBoardPosition>();
 
-			ChessBoardPosition upPosition = CalculatePosition(chessBoard, currentPosition, MovementPoint, 0);
-			ChessBoardPosition downPosition = CalculatePosition(chessBoard, currentPosition, -MovementPoint, 0);
-			ChessBoardPosition leftPosition = CalculatePosition(chessBoard, currentPosition, 0, MovementPoint);
-			ChessBoardPosition rightPosition = CalculatePosition(chessBoard, currentPosition, 0, -MovementPoint);
+			ChessBoardPosition upPosition = chessBoard.CalculatePosition(currentPosition, MovementPoint, 0);
+			ChessBoardPosition downPosition = chessBoard.CalculatePosition(currentPosition, -MovementPoint, 0);
+			ChessBoardPosition leftPosition = chessBoard.CalculatePosition(currentPosition, 0, MovementPoint);
+			ChessBoardPosition rightPosition = chessBoard.CalculatePosition(currentPosition, 0, -MovementPoint);
 
 			validPositions.Add(upPosition);
 			validPositions.Add(downPosition);
@@ -114,10 +117,10 @@ namespace LaserChess.Entities.Human
 
 			for (int diagonalCorner = 1; diagonalCorner < chessBoard.Rows; diagonalCorner++)
 			{
-				ChessBoardPosition upLeftPosition = CalculatePosition(chessBoard, currentPosition, diagonalCorner, diagonalCorner, true);
-				ChessBoardPosition upRight = CalculatePosition(chessBoard, currentPosition, diagonalCorner, -diagonalCorner, true);
-				ChessBoardPosition downLeftPosition = CalculatePosition(chessBoard, currentPosition, -diagonalCorner, diagonalCorner, true);
-				ChessBoardPosition downRightPosition = CalculatePosition(chessBoard, currentPosition, -diagonalCorner, -diagonalCorner, true);
+				ChessBoardPosition upLeftPosition = chessBoard.CalculatePosition(currentPosition, diagonalCorner, diagonalCorner, true);
+				ChessBoardPosition upRight = chessBoard.CalculatePosition(currentPosition, diagonalCorner, -diagonalCorner, true);
+				ChessBoardPosition downLeftPosition = chessBoard.CalculatePosition(currentPosition, -diagonalCorner, diagonalCorner, true);
+				ChessBoardPosition downRightPosition = chessBoard.CalculatePosition(currentPosition, -diagonalCorner, -diagonalCorner, true);
 
 				validPositions.Add(upLeftPosition);
 				validPositions.Add(upRight);
@@ -126,29 +129,6 @@ namespace LaserChess.Entities.Human
 			}
 
 			return validPositions;
-		}
-
-		private ChessBoardPosition CalculatePosition(ChessBoard.ChessBoard chessBoard, ChessBoardPosition currentPosition, int x, int y, bool ignoreOccupacy = false)
-		{
-			var newPosition = new ChessBoardPosition
-			{
-				CurrentRow = currentPosition.CurrentRow - x,
-				CurrentColumn = currentPosition.CurrentColumn - y,
-			};
-
-			if ((newPosition.CurrentRow > -1 && newPosition.CurrentRow < 8) &&
-				(newPosition.CurrentColumn > -1 && newPosition.CurrentColumn < 8))
-			{
-				ChessBoardCell cell = chessBoard.GetCell(newPosition);
-				if (cell.IsOccupied && !ignoreOccupacy)
-				{
-					return null;
-				}
-
-				return newPosition;
-			}
-
-			return null;
 		}
 	}
 }

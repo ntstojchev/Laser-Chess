@@ -296,5 +296,28 @@ namespace LaserChess.ChessBoard
 
 			SetCell(chessBoardPosition, cell);
 		}
+
+		public ChessBoardPosition CalculatePosition(ChessBoardPosition currentPosition, int x, int y, bool ignoreOccupacy = false)
+		{
+			var newPosition = new ChessBoardPosition
+			{
+				CurrentRow = currentPosition.CurrentRow - x,
+				CurrentColumn = currentPosition.CurrentColumn - y,
+			};
+
+			if ((newPosition.CurrentRow > -1 && newPosition.CurrentRow < 8) &&
+				(newPosition.CurrentColumn > -1 && newPosition.CurrentColumn < 8))
+			{
+				ChessBoardCell cell = GetCell(newPosition);
+				if (cell.IsOccupied && !ignoreOccupacy)
+				{
+					return null;
+				}
+
+				return newPosition;
+			}
+
+			return null;
+		}
 	}
 }

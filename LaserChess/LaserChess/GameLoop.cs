@@ -57,7 +57,8 @@ namespace LaserChess
 									Console.WriteLine("Grunt can move 1 space orthogonally. Attacks diagonally at any range.");
 									break;
 								case EntityType.Jumpship:
-									Console.WriteLine("Jumpship moves like the knight in chess.");
+									Console.WriteLine(@"Jumpship moves like the knight in chess. Attack all 4 spaces orthogonally adjacent.
+										For attacking, specify Jumpship's current position.");
 									break;
 								case EntityType.Tank:
 									Console.WriteLine("Tank moves like the Queen in chess, up to 3 spaces.");
@@ -106,6 +107,8 @@ namespace LaserChess
 												{
 													ChessBoardPosition currentPosition = (_humanPlayerPieces.First(p => p.EntityID == _selectedEntity.ID)).CurrentPosition;
 													_selectedEntity.Attack(_chessBoard, currentPosition, targetPosition);
+
+													_aiPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Ai);
 												}
 												catch (Exception ex)
 												{
