@@ -17,6 +17,8 @@ namespace LaserChess
 		private List<Guid> _playedEntityIDs;
 		private Entity _selectedEntity;
 
+		private bool metVictoryCondition;
+
 		public GameLoop(ChessBoard.ChessBoard chessBoard)
 		{
 			_chessBoard = chessBoard;
@@ -37,149 +39,19 @@ namespace LaserChess
 
 		private void EnterGameLoop()
 		{
-			bool metVictoryCondition = false;
+			metVictoryCondition = false;
 			while (!metVictoryCondition)
 			{
 				UpdateScreen();
 
 				if (_currentGameState == GameState.PlayerTurn)
 				{
-					while (_currentGameState == GameState.PlayerTurn)
-					{
-						#region Play with selected piece
-
-						if (_selectedEntity != null)
-						{
-							Console.ForegroundColor = ConsoleColor.Blue;
-							switch (_selectedEntity.Type)
-							{
-								case EntityType.Grunt:
-									Console.WriteLine("Grunt can move 1 space orthogonally. Attacks diagonally at any range.");
-									break;
-								case EntityType.Jumpship:
-									Console.WriteLine(@"Jumpship moves like the knight in chess. Attack all 4 spaces orthogonally adjacent.
-										For attacking, specify Jumpship's current position.");
-									break;
-								case EntityType.Tank:
-									Console.WriteLine("Tank moves like the Queen in chess, up to 3 spaces.");
-									break;
-							}
-							Console.ResetColor();
-
-							Console.Write("Select new cell to move (<row><column>) or 'deselect' the current piece: ");
-
-							string inputLine = Console.ReadLine();
-							if (inputLine == "deselect")
-							{
-								_selectedEntity = null;
-								break;
-							}
-							else if (inputLine.Length == 2)
-							{
-								ChessBoardPosition newChessBoardPosition = _chessBoard.ParseChessBoardCellPosition(inputLine);
-								ChessBoardPosition oldChessBoardPosition = (_humanPlayerPieces.First(p => p.EntityID == _selectedEntity.ID)).CurrentPosition;
-							
-								try
-								{
-									_selectedEntity.Move(_chessBoard, oldChessBoardPosition, newChessBoardPosition);
-									_humanPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Human);
-
-									UpdateScreen();
-
-									string inputAttack = string.Empty;
-									while (inputAttack == string.Empty)
-									{
-										Console.Write("Select cell (<row><column>) to attack or 'skip' attack: ");
-										inputAttack = Console.ReadLine();
-
-										if (inputAttack.Length == 2)
-										{
-											ChessBoardPosition targetPosition = _chessBoard.ParseChessBoardCellPosition(inputAttack);
-
-											if (targetPosition == null)
-											{
-												Console.WriteLine("Invalid cell.");
-												inputAttack = string.Empty;
-											}
-											else
-											{
-												try
-												{
-													ChessBoardPosition currentPosition = (_humanPlayerPieces.First(p => p.EntityID == _selectedEntity.ID)).CurrentPosition;
-													_selectedEntity.Attack(_chessBoard, currentPosition, targetPosition);
-
-													_aiPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Ai);
-												}
-												catch (Exception ex)
-												{
-													Console.WriteLine(ex.Message);
-													inputAttack = string.Empty;
-												}
-											}
-										}
-										else if (inputAttack == "skip")
-										{
-											inputAttack = "skip";
-										}
-										else
-										{
-											inputAttack = string.Empty;
-										}
-									}
-
-									_playedEntityIDs.Add(_selectedEntity.ID);
-									_selectedEntity = null;
-									break;
-								}
-								catch (Exception ex)
-								{
-									Console.ForegroundColor = ConsoleColor.Red;
-									Console.WriteLine(ex.Message);
-									Console.ReadLine();
-									Console.ResetColor();
-									break;
-								}
-							}
-							else
-							{
-								break;
-							}
-							///TO DO implement Grunt attack
-						}
-
-						#endregion
-
-						#region Select piece or end turn
-
-						Console.Write("Select player piece (<row><column>), end turn (endturn), or quit (exit): ");
-
-						string line = Console.ReadLine();
-						if (line != string.Empty)
-						{
-							if (line == "endturn")
-							{
-								EndTurn();
-								_currentGameState = GameState.AiTurn;
-							}
-							else if (line == "exit")
-							{
-								return;
-							}
-							else if (line.Length == 2)
-							{
-								SelectEntityDuringHumanTurn(line);
-							}
-						}
-
-						#endregion
-					}
+					HumanPlay();
 				}
 				else if (_currentGameState == GameState.AiTurn)
 				{
 					AiPlay();
 				}
-
-				//add victory conditions
 			}
 		}
 
@@ -189,14 +61,198 @@ namespace LaserChess
 			Console.WriteLine();
 		}
 
-		private void EndTurn()
+		private void HumanPlay()
 		{
+			while (_currentGameState == GameState.PlayerTurn)
+			{
+				if (_playedEntityIDs.Count == _humanPlayerPieces.Count)
+				{
+					Console.WriteLine("You've played with all your pieces. Ending turn...");
+					Console.ReadLine();
 
+					EndTurn();
+					_currentGameState = GameState.AiTurn;
+				}
+
+				#region Play with selected piece
+
+				if (_selectedEntity != null)
+				{
+					Console.ForegroundColor = ConsoleColor.Cyan;
+					switch (_selectedEntity.Type)
+					{
+						case EntityType.Grunt:
+							Console.WriteLine("Grunt can move 1 space orthogonally. Attacks diagonally at any range.");
+							break;
+						case EntityType.Jumpship:
+							Console.WriteLine(@"Jumpship moves like the knight in chess. Attack all 4 spaces orthogonally adjacent.
+For attacking, specify Jumpship's current position.");
+							break;
+						case EntityType.Tank:
+							Console.WriteLine("Tank moves like the Queen in chess, up to 3 spaces. Attacks orthogonally at any range");
+							break;
+					}
+					Console.ResetColor();
+
+					Console.Write("Select new cell to move (<column><row>) or 'deselect' the current piece: ");
+
+					string inputLine = Console.ReadLine();
+					if (inputLine == "deselect")
+					{
+						_selectedEntity = null;
+						break;
+					}
+					else if (inputLine.Length == 2)
+					{
+						ChessBoardPosition newChessBoardPosition = _chessBoard.ParseChessBoardCellPosition(inputLine);
+						ChessBoardPosition oldChessBoardPosition = (_humanPlayerPieces.First(p => p.EntityID == _selectedEntity.ID)).CurrentPosition;
+
+						try
+						{
+							_selectedEntity.Move(_chessBoard, oldChessBoardPosition, newChessBoardPosition);
+							_humanPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Human);
+
+							UpdateScreen();
+
+							string inputAttack = string.Empty;
+							while (inputAttack == string.Empty)
+							{
+								Console.Write("Select cell (<column><row>) to attack or 'skip' attack: ");
+								inputAttack = Console.ReadLine();
+
+								if (inputAttack.Length == 2)
+								{
+									ChessBoardPosition targetPosition = _chessBoard.ParseChessBoardCellPosition(inputAttack);
+
+									if (targetPosition == null)
+									{
+										Console.WriteLine("Invalid cell.");
+										inputAttack = string.Empty;
+									}
+									else
+									{
+										try
+										{
+											ChessBoardPosition currentPosition = (_humanPlayerPieces.First(p => p.EntityID == _selectedEntity.ID)).CurrentPosition;
+											_selectedEntity.Attack(_chessBoard, currentPosition, targetPosition);
+
+											_aiPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Ai);
+										}
+										catch (Exception ex)
+										{
+											Console.WriteLine(ex.Message);
+											inputAttack = string.Empty;
+										}
+									}
+								}
+								else if (inputAttack == "skip")
+								{
+									inputAttack = "skip";
+								}
+								else
+								{
+									inputAttack = string.Empty;
+								}
+							}
+
+							_playedEntityIDs.Add(_selectedEntity.ID);
+							_selectedEntity = null;
+							break;
+						}
+						catch (Exception ex)
+						{
+							Console.ForegroundColor = ConsoleColor.Red;
+							Console.WriteLine(ex.Message);
+							Console.ReadLine();
+							Console.ResetColor();
+							break;
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				#endregion
+
+				#region Select piece or end turn
+
+				Console.Write("Select player piece (<column><row>), end turn (endturn), or quit (exit): ");
+
+				string line = Console.ReadLine();
+				if (line != string.Empty)
+				{
+					if (line == "endturn")
+					{
+						EndTurn();
+						_currentGameState = GameState.AiTurn;
+					}
+					else if (line == "exit")
+					{
+						return;
+					}
+					else if (line.Length == 2)
+					{
+						SelectEntityDuringHumanTurn(line);
+					}
+				}
+
+				#endregion
+			}
 		}
 
 		private void AiPlay()
 		{
 
+		}
+
+		private void EndTurn()
+		{
+			_humanPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Human);
+			_aiPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Ai);
+
+			_selectedEntity = null;
+			_playedEntityIDs = new List<Guid>();
+
+			if (_humanPlayerPieces.Count == 0)
+			{
+				metVictoryCondition = true;
+
+				Console.WriteLine("AI wins! No more human pieces!");
+				Console.ReadLine();
+				return;
+			}
+
+			foreach (PlayerPiece playerPiece in _aiPlayerPieces)
+			{
+				Entity entity = _chessBoard.GetEntity(playerPiece);
+				if ((entity.Type == EntityType.Drone)
+					&& (playerPiece.CurrentPosition.CurrentRow == _chessBoard.Rows - 1))
+				{
+					metVictoryCondition = true;
+
+					Console.WriteLine("AI wins! Enemy drone reached 8th row! Now he's a princess!");
+					Console.ReadLine();
+					return;
+				}
+			}
+
+			bool aliveCommandUnit = false;
+			foreach (PlayerPiece playerPiece in _aiPlayerPieces)
+			{
+				Entity entity = _chessBoard.GetEntity(playerPiece);
+				if (entity.Type == EntityType.CommandUnit)
+				{
+					aliveCommandUnit = true;
+
+					Console.WriteLine("Human wins! All command units are destroyed!");
+					Console.ReadLine();
+					break;
+				}
+			}
+
+			metVictoryCondition = aliveCommandUnit;
 		}
 
 		private void SelectEntityDuringHumanTurn(string line)

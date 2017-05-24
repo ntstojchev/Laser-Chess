@@ -281,6 +281,12 @@ namespace LaserChess.ChessBoard
 			return ChessBoardCells[chessBoardPosition.CurrentRow, chessBoardPosition.CurrentColumn];
 		}
 
+		public Entity GetEntity(PlayerPiece playerPiece)
+		{
+			ChessBoardCell cell = GetCell(playerPiece.CurrentPosition);
+			return cell.Entity;
+		}
+
 		public void SetCell(ChessBoardPosition chessBoardPosition, ChessBoardCell cell)
 		{
 			ChessBoardCells[chessBoardPosition.CurrentRow, chessBoardPosition.CurrentColumn] = cell;
