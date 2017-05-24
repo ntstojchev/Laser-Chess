@@ -177,7 +177,7 @@ namespace LaserChess.ChessBoard
 			}
 		}
 
-		public List<PlayerPiece> GetPlayerPieces(EntityControlType controlType)
+		public List<PlayerPiece> GetPlayerPiecesBasedOnControlType(EntityControlType controlType)
 		{
 			var playerPieces = new List<PlayerPiece>();
 			
@@ -189,6 +189,39 @@ namespace LaserChess.ChessBoard
 					{
 						Entity entity = ChessBoardCells[row, column].Entity;
 						if (entity.ControlType == controlType)
+						{
+							var playerPiece = new PlayerPiece
+							{
+								EntityID = entity.ID,
+							};
+
+							playerPiece.CurrentPosition = new ChessBoardPosition
+							{
+								CurrentRow = row,
+								CurrentColumn = column,
+							};
+
+							playerPieces.Add(playerPiece);
+						}
+					}
+				}
+			}
+
+			return playerPieces;
+		}
+
+		public List<PlayerPiece> GetPlayerPiecesBasedOnEntityType(EntityType entityType)
+		{
+			var playerPieces = new List<PlayerPiece>();
+
+			for (int row = 0; row < Rows; row++)
+			{
+				for (int column = 0; column < Columns; column++)
+				{
+					if (ChessBoardCells[row, column].IsOccupied)
+					{
+						Entity entity = ChessBoardCells[row, column].Entity;
+						if (entity.Type == entityType)
 						{
 							var playerPiece = new PlayerPiece
 							{
@@ -285,6 +318,29 @@ namespace LaserChess.ChessBoard
 		{
 			ChessBoardCell cell = GetCell(playerPiece.CurrentPosition);
 			return cell.Entity;
+		}
+
+		public ChessBoardPosition GetEntityPosition(Guid id)
+		{
+			for (int row = 0; row < Rows; row++)
+			{
+				for (int column = 0; column < Columns; column++)
+				{
+					if (ChessBoardCells[row, column].Entity != null)
+					{
+						if (ChessBoardCells[row, column].Entity.ID == id)
+						{
+							return new ChessBoardPosition
+							{
+								CurrentColumn = column,
+								CurrentRow = row,
+							};
+						}
+					}
+				}
+			}
+
+			return null;
 		}
 
 		public void SetCell(ChessBoardPosition chessBoardPosition, ChessBoardCell cell)

@@ -10,5 +10,6 @@ namespace LaserChess
 	{
 		PlayerTurn,
 		AiTurn,
+		Quit,
 	}
 }

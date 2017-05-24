@@ -3,6 +3,7 @@ using LaserChess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace LaserChess
 {
@@ -31,8 +32,8 @@ namespace LaserChess
 		{
 			_currentGameState = GameState.PlayerTurn;
 
-			_humanPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Human);
-			_aiPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Ai);
+			_humanPlayerPieces = _chessBoard.GetPlayerPiecesBasedOnControlType(EntityControlType.Human);
+			_aiPlayerPieces = _chessBoard.GetPlayerPiecesBasedOnControlType(EntityControlType.Ai);
 
 			_playedEntityIDs = new List<Guid>();
 		}
@@ -51,6 +52,12 @@ namespace LaserChess
 				else if (_currentGameState == GameState.AiTurn)
 				{
 					AiPlay();
+					_aiPlayerPieces = _chessBoard.GetPlayerPiecesBasedOnControlType(EntityControlType.Ai);
+					_currentGameState = GameState.PlayerTurn;
+				}
+				else if (_currentGameState == GameState.Quit)
+				{
+					return;
 				}
 			}
 		}
@@ -110,7 +117,7 @@ For attacking, specify Jumpship's current position.");
 						try
 						{
 							_selectedEntity.Move(_chessBoard, oldChessBoardPosition, newChessBoardPosition);
-							_humanPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Human);
+							_humanPlayerPieces = _chessBoard.GetPlayerPiecesBasedOnControlType(EntityControlType.Human);
 
 							UpdateScreen();
 
@@ -136,7 +143,7 @@ For attacking, specify Jumpship's current position.");
 											ChessBoardPosition currentPosition = (_humanPlayerPieces.First(p => p.EntityID == _selectedEntity.ID)).CurrentPosition;
 											_selectedEntity.Attack(_chessBoard, currentPosition, targetPosition);
 
-											_aiPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Ai);
+											_aiPlayerPieces = _chessBoard.GetPlayerPiecesBasedOnControlType(EntityControlType.Ai);
 										}
 										catch (Exception ex)
 										{
@@ -176,6 +183,12 @@ For attacking, specify Jumpship's current position.");
 
 				#endregion
 
+				CheckVictoryConditions();
+				if (metVictoryCondition)
+				{
+					return;
+				}
+
 				#region Select piece or end turn
 
 				Console.Write("Select player piece (<column><row>), end turn (endturn), or quit (exit): ");
@@ -190,6 +203,7 @@ For attacking, specify Jumpship's current position.");
 					}
 					else if (line == "exit")
 					{
+						_currentGameState = GameState.Quit;
 						return;
 					}
 					else if (line.Length == 2)
@@ -204,17 +218,97 @@ For attacking, specify Jumpship's current position.");
 
 		private void AiPlay()
 		{
+			DronesMoveAndAttack();
 
+			DreadnoughtsMoveAndAttack();
+
+			CommandUnitsMoveAndAttack();
+
+			EndTurn();
+		}
+
+		private void DronesMoveAndAttack()
+		{
+			List<PlayerPiece> drones = _chessBoard.GetPlayerPiecesBasedOnEntityType(EntityType.Drone);
+			if (drones.Count > 1)
+			{
+				drones.Shuffle();
+			}
+
+			foreach (PlayerPiece drone in drones)
+			{
+				Entity entity = _chessBoard.GetEntity(drone);
+				entity.Move(_chessBoard, drone.CurrentPosition, null);
+
+				UpdateScreen();
+				Thread.Sleep(450);
+
+				ChessBoardPosition newEntityPosition = _chessBoard.GetEntityPosition(drone.EntityID);
+				entity.Attack(_chessBoard, newEntityPosition, null);
+			}
+		}
+
+		private void DreadnoughtsMoveAndAttack()
+		{
+			List<PlayerPiece> dreadnoughts = _chessBoard.GetPlayerPiecesBasedOnEntityType(EntityType.Dreadnought);
+
+			foreach (PlayerPiece dreadnought in dreadnoughts)
+			{
+
+			}
+		}
+
+		private void CommandUnitsMoveAndAttack()
+		{
+			List<PlayerPiece> commandUnits = _chessBoard.GetPlayerPiecesBasedOnEntityType(EntityType.CommandUnit);
+
+			foreach (PlayerPiece commandUnit in commandUnits)
+			{
+
+			}
 		}
 
 		private void EndTurn()
 		{
-			_humanPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Human);
-			_aiPlayerPieces = _chessBoard.GetPlayerPieces(EntityControlType.Ai);
+			_humanPlayerPieces = _chessBoard.GetPlayerPiecesBasedOnControlType(EntityControlType.Human);
+			_aiPlayerPieces = _chessBoard.GetPlayerPiecesBasedOnControlType(EntityControlType.Ai);
 
 			_selectedEntity = null;
 			_playedEntityIDs = new List<Guid>();
 
+			CheckVictoryConditions();
+		}
+
+		private void SelectEntityDuringHumanTurn(string line)
+		{
+			ChessBoardPosition chessBoardPosition = _chessBoard.ParseChessBoardCellPosition(line);
+			if (chessBoardPosition == null)
+			{
+				Console.WriteLine("Invalid cell.");
+				return;
+			}
+
+			ChessBoardCell cell = _chessBoard.GetCell(chessBoardPosition);
+			if (cell == null)
+			{
+				Console.WriteLine($"Specified cell {line} is empty.");
+			}
+			else if (cell.IsOccupied)
+			{
+				if (_playedEntityIDs.Contains(cell.Entity.ID))
+				{
+					Console.WriteLine($"You've already played with the piece on {line}.");
+				}
+				else
+				{
+					_selectedEntity = cell.Entity;
+
+				}
+			}
+		}
+
+		private void CheckVictoryConditions()
+		{
 			if (_humanPlayerPieces.Count == 0)
 			{
 				metVictoryCondition = true;
@@ -245,42 +339,19 @@ For attacking, specify Jumpship's current position.");
 				if (entity.Type == EntityType.CommandUnit)
 				{
 					aliveCommandUnit = true;
-
-					Console.WriteLine("Human wins! All command units are destroyed!");
-					Console.ReadLine();
-					break;
+					return;
 				}
 			}
 
-			metVictoryCondition = aliveCommandUnit;
-		}
-
-		private void SelectEntityDuringHumanTurn(string line)
-		{
-			ChessBoardPosition chessBoardPosition = _chessBoard.ParseChessBoardCellPosition(line);
-			if (chessBoardPosition == null)
+			if (!aliveCommandUnit)
 			{
-				Console.WriteLine("Invalid cell.");
-				return;
+				metVictoryCondition = true;
+
+				Console.WriteLine("Human wins! All command units are destroyed!");
+				Console.ReadLine();
 			}
 
-			ChessBoardCell cell = _chessBoard.GetCell(chessBoardPosition);
-			if (cell == null)
-			{
-				Console.WriteLine($"Specified cell {line} is empty.");
-			}
-			else if (cell.IsOccupied)
-			{
-				if (_playedEntityIDs.Contains(cell.Entity.ID))
-				{
-					Console.WriteLine($"You've already played with the piece on {line}.");
-				}
-				else
-				{
-					_selectedEntity = cell.Entity;
 
-				}
-			}
 		}
 	}
 }
