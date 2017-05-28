@@ -55,6 +55,7 @@
     <Compile Include="ChessBoard\PlayerPiece.cs" />
     <Compile Include="ChessBoard\SearchParameters.cs" />
     <Compile Include="Entities\AI\CommandUnit.cs" />
+    <Compile Include="Entities\AI\CommandUnitMoveState.cs" />
     <Compile Include="Entities\AI\Dreadnought.cs" />
     <Compile Include="Entities\AI\Drone.cs" />
     <Compile Include="Entities\Entity.cs" />

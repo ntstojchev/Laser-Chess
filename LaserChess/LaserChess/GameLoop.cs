@@ -273,10 +273,18 @@ For attacking, specify Jumpship's current position.");
 		private void CommandUnitsMoveAndAttack()
 		{
 			List<PlayerPiece> commandUnits = _chessBoard.GetPlayerPiecesBasedOnEntityType(EntityType.CommandUnit);
+			if (commandUnits.Count > 1)
+			{
+				commandUnits.Shuffle();
+			}
 
 			foreach (PlayerPiece commandUnit in commandUnits)
 			{
+				Entity entity = _chessBoard.GetEntity(commandUnit);
+				entity.Move(_chessBoard, commandUnit.CurrentPosition, null);
 
+				UpdateScreen();
+				Thread.Sleep(450);
 			}
 		}
 
