@@ -102,9 +102,5 @@ namespace LaserChess
 
 			return chessBoard;
 		}
-
-		private static void DrawLevel(string[] chessBoard)
-		{
-		}
 	}
 }

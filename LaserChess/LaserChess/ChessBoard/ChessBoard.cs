@@ -64,7 +64,6 @@ namespace LaserChess.ChessBoard
 				Console.WriteLine("   |   |   |   |   |   |   |   |   |");
 
 				var rowLine = new StringBuilder();
-				//rowLine.Append($" {Rows - row} |");
 				Console.Write($" {Rows - row} |");
 
 				bool invertEmptySpace = row % 2 != 0;
@@ -73,12 +72,11 @@ namespace LaserChess.ChessBoard
 					ChessBoardCell cell = ChessBoardCells[row, column];
 					if (cell.IsOccupied && cell.Entity != null)
 					{
-						//rowLine.Append($"{cell}|");
-						if (cell.Entity.ControlType == Entities.EntityControlType.Human)
+						if (cell.Entity.ControlType == EntityControlType.Human)
 						{
 							Console.ForegroundColor = ConsoleColor.Cyan;
 						}
-						else if (cell.Entity.ControlType == Entities.EntityControlType.Ai)
+						else if (cell.Entity.ControlType == EntityControlType.Ai)
 						{
 							Console.ForegroundColor = ConsoleColor.Red;
 						}
@@ -93,12 +91,10 @@ namespace LaserChess.ChessBoard
 						{
 							if (invertEmptySpace)
 							{
-								//rowLine.Append($"{OddCellSymbol}|");
 								Console.Write($"{OddCellSymbol}|");
 							}
 							else
 							{
-								//rowLine.Append($"{EvenCellSymbol}|");
 								Console.Write($"{EvenCellSymbol}|");
 							}
 						}
@@ -107,18 +103,15 @@ namespace LaserChess.ChessBoard
 							if (invertEmptySpace)
 							{
 								Console.Write($"{EvenCellSymbol}|");
-								//rowLine.Append($"{EvenCellSymbol}|");
 							}
 							else
 							{
 								Console.Write($"{OddCellSymbol}|");
-								//rowLine.Append($"{OddCellSymbol}|");
 							}
 						}
 					}
 				}
 
-				//Console.WriteLine(rowLine.ToString());
 				Console.WriteLine();
 				Console.WriteLine("   |___|___|___|___|___|___|___|___|");
 			}
