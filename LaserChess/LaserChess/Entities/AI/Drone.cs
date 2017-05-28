@@ -60,7 +60,7 @@ namespace LaserChess.Entities.AI
 				{
 					target.Entity.HitPoints = target.Entity.HitPoints - AttackPower;
 
-					Console.WriteLine($"Hit on enemy {target.Entity.Name}!");
+					Console.WriteLine($"Hit on enemy {target.Entity.Name} for {AttackPower} damage!");
 					if (target.Entity.HitPoints < 1)
 					{
 						Console.WriteLine($"Enemy {target.Entity.Name} is destroyed!");

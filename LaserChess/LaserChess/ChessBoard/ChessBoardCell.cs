@@ -10,7 +10,7 @@ namespace LaserChess.ChessBoard
 
 		public override string ToString()
 		{
-			return $" {Entity.ToString()} ";
+			return $"{Entity.ToString()}";
 		}
 	}
 }

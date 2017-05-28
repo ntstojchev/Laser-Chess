@@ -343,6 +343,27 @@ namespace LaserChess.ChessBoard
 			return null;
 		}
 
+		public bool[,] GetPathfinderGrid()
+		{
+			bool[,] grid = new bool[8,8];
+			for (int row = 0; row < Rows; row++)
+			{
+				for (int column = 0; column < Columns; column++)
+				{
+					if (ChessBoardCells[column, row].IsOccupied)
+					{
+						grid[row, column] = false;
+					}
+					else
+					{
+						grid[row, column] = true;
+					}
+				}
+			}
+
+			return grid;
+		}
+
 		public void SetCell(ChessBoardPosition chessBoardPosition, ChessBoardCell cell)
 		{
 			ChessBoardCells[chessBoardPosition.CurrentRow, chessBoardPosition.CurrentColumn] = cell;

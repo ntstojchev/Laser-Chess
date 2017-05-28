@@ -54,7 +54,7 @@ namespace LaserChess.Entities.Human
 				{
 					cell.Entity.HitPoints = cell.Entity.HitPoints - AttackPower;
 
-					Console.WriteLine($"Hit on enemy {cell.Entity.Name}!");
+					Console.WriteLine($"Hit on enemy {cell.Entity.Name} for {AttackPower} damage!");
 					if (cell.Entity.HitPoints < 1)
 					{
 						Console.WriteLine($"Enemy {cell.Entity.Name} is destroyed!");

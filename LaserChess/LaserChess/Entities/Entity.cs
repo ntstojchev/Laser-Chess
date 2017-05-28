@@ -41,7 +41,7 @@ namespace LaserChess.Entities
 
 		public override string ToString()
 		{
-			return Icon;
+			return $"{Icon}♥{HitPoints}";
 		}
 	}
 }

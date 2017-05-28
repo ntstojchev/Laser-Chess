@@ -79,6 +79,7 @@ namespace LaserChess
 
 					EndTurn();
 					_currentGameState = GameState.AiTurn;
+					break;
 				}
 
 				#region Play with selected piece
@@ -251,10 +252,21 @@ For attacking, specify Jumpship's current position.");
 		private void DreadnoughtsMoveAndAttack()
 		{
 			List<PlayerPiece> dreadnoughts = _chessBoard.GetPlayerPiecesBasedOnEntityType(EntityType.Dreadnought);
+			if (dreadnoughts.Count > 1)
+			{
+				dreadnoughts.Shuffle();
+			}
 
 			foreach (PlayerPiece dreadnought in dreadnoughts)
 			{
+				Entity entity = _chessBoard.GetEntity(dreadnought);
+				entity.Move(_chessBoard, dreadnought.CurrentPosition, null);
 
+				UpdateScreen();
+				Thread.Sleep(450);
+
+				ChessBoardPosition newEntityPosition = _chessBoard.GetEntityPosition(dreadnought.EntityID);
+				entity.Attack(_chessBoard, newEntityPosition, null);
 			}
 		}
 
