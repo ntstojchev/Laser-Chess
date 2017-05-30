@@ -237,17 +237,20 @@ namespace LaserChess.Entities.AI
 				return;
 			}
 
-			ChessBoardCell newCell = chessBoard.GetCell(newPosition);
-			if (newCell.IsOccupied)
+			if (newPosition.CurrentColumn >= 0 && newPosition.CurrentRow >= 0)
 			{
-				return;
-			}
-			else
-			{
-				ChessBoardCell cell = chessBoard.GetCell(oldPosition);
-				chessBoard.SetCell(newPosition, cell);
+				ChessBoardCell newCell = chessBoard.GetCell(newPosition);
+				if (newCell.IsOccupied)
+				{
+					return;
+				}
+				else
+				{
+					ChessBoardCell cell = chessBoard.GetCell(oldPosition);
+					chessBoard.SetCell(newPosition, cell);
 
-				chessBoard.EmptyCell(oldPosition);
+					chessBoard.EmptyCell(oldPosition);
+				}
 			}
 		}
 	}

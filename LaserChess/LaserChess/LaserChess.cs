@@ -13,11 +13,10 @@ namespace LaserChess
 			Console.WriteLine("Welcome to LaserChess!");
 			Console.WriteLine(Environment.NewLine);
 
-			//TODO: Get level count from the 'Levels' directory. Read the level names from thier file names.
-			Console.WriteLine("Choose Chess board:");
-			Console.WriteLine("1. Initial fight");
-			Console.WriteLine("2. WTF?!");
-			Console.WriteLine("3. Dreadnought me baby!");
+			Console.WriteLine("Choose LaserChess board:");
+			Console.WriteLine("1. First contact!");
+			Console.WriteLine("2. Drone menace!");
+			Console.WriteLine("3. 300 vs 4!");
 			Console.WriteLine("or write 'exit' to quit LaserChess!");
 			Console.WriteLine(Environment.NewLine);
 

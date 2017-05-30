@@ -102,7 +102,7 @@ For attacking, specify Jumpship's current position.");
 					}
 					Console.ResetColor();
 
-					Console.Write("Select new cell to move (<column><row>) or 'deselect' the current piece: ");
+					Console.Write("Select new cell to move (<column><row>) or deselect (deselect) the current piece: ");
 
 					string inputLine = Console.ReadLine();
 					if (inputLine == "deselect")
@@ -125,7 +125,7 @@ For attacking, specify Jumpship's current position.");
 							string inputAttack = string.Empty;
 							while (inputAttack == string.Empty)
 							{
-								Console.Write("Select cell (<column><row>) to attack or 'skip' attack: ");
+								Console.Write("Select cell (<column><row>) to attack or skip (skip) attack: ");
 								inputAttack = Console.ReadLine();
 
 								if (inputAttack.Length == 2)
@@ -370,8 +370,6 @@ For attacking, specify Jumpship's current position.");
 				Console.WriteLine("Human wins! All command units are destroyed!");
 				Console.ReadLine();
 			}
-
-
 		}
 	}
 }

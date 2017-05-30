@@ -41,9 +41,6 @@ namespace LaserChess.ChessBoard
 			Columns = _columns;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public void Draw()
 		{
 			///("_ +___+___+___+___+___+___+___+___+");
@@ -119,9 +116,6 @@ namespace LaserChess.ChessBoard
 			Console.WriteLine("     A   B   C   D   E   F   G   H  ");
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		public void LoadLevel(string[] levelPath)
 		{
 			_chessBoardCells = new ChessBoardCell[Rows, Columns];
